@@ -27,3 +27,79 @@ SELECT Name FROM Employee ORDER BY Name ASC;
 Write a query that prints a list of employee names (i.e.: the name attribute) for employees in Employee having a salary greater than $2000  per month who have been employees for less than 10 months. Sort your result by ascending employee_id.
 SELECT name FROM Employee WHERE salary > 2000 AND months < 10 ORDER BY employee_id ASC;
 
+Given the table schemas below, write a query to print the company_code, founder name, total number of lead managers, total number of senior managers, total number of managers, and total number of employees. Order your output by ascending company_code.
+SELECT Company.company_code, Company.founder, COUNT( DISTINCT Lead_Manager.lead_manager_code) AS lead, COUNT(DISTINCT Senior_Manager.senior_manager_code) AS senior, COUNT(DISTINCT Manager.manager_code) AS manager, COUNT(DISTINCT Employee.employee_code) AS employee FROM Company, Lead_Manager, Senior_Manager, Manager, Employee 
+WHERE Employee.manager_code=Manager.manager_code
+AND 
+Manager.senior_manager_code=Senior_Manager.senior_manager_code
+AND Lead_Manager.lead_manager_code=Senior_Manager.lead_manager_code 
+AND Company.company_code=Lead_Manager.company_code 
+GROUP BY Company.company_code, Company.founder 
+ORDER BY Company.company_code ASC;
+
+Write a query identifying the type of each record in the TRIANGLES table using its three side lengths. Output one of the following statements for each record in the table:
+Equilateral: It's a triangle with  sides of equal length.
+Isosceles: It's a triangle with  sides of equal length.
+Scalene: It's a triangle with  sides of differing lengths.
+Not A Triangle: The given values of A, B, and C don't form a triangle.
+SELECT CASE WHEN (A+B<=C) OR (B+C<=A) OR (C+A<=B) THEN "Not A Triangle"
+WHEN (A=B) AND (B=C) THEN "Equilateral"
+WHEN ((A=B)&(A!=C)) OR ((B=C)&(B!=A)) OR ((A=C)&(A!=B)) THEN "Isosceles"
+WHEN (A!=B) AND (B!=C) AND (C!=A) THEN "Scalene"
+END AS Types
+FROM TRIANGLES; 
+
+Given the CITY and COUNTRY tables, query the sum of the populations of all cities where the CONTINENT is 'Asia'.
+Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+SELECT SUM(CITY.POPULATION) FROM CITY JOIN COUNTRY ON CITY.COUNTRYCODE=COUNTRY.CODE WHERE COUNTRY.CONTINENT='Asia';
+
+Given the CITY and COUNTRY tables, query the names of all cities where the CONTINENT is 'Africa'.
+Note: CITY.CountryCode and COUNTRY.Code are matching key columns.
+SELECT CITY.NAME FROM CITY JOIN COUNTRY ON CITY.COUNTRYCODE=COUNTRY.CODE WHERE COUNTRY.CONTINENT='Africa';
+
+Generate the following two result sets:
+
+Query an alphabetically ordered list of all names in OCCUPATIONS, immediately followed by the first letter of each profession as a parenthetical (i.e.: enclosed in parentheses). For example: AnActorName(A), ADoctorName(D), AProfessorName(P), and ASingerName(S).
+Query the number of ocurrences of each occupation in OCCUPATIONS. Sort the occurrences in ascending order, and output them in the following format:
+SELECT CONCAT(Name, '(',LEFT(Occupation,1),')') FROM OCCUPATIONS ORDER BY Name ASC; 
+SELECT 'There are a total of' ,COUNT(Occupation), CONCAT(LOWER(Occupation),'s.') FROM OCCUPATIONS GROUP BY Occupation ORDER BY COUNT(Occupation) ASC; 
+
+Pivot the Occupation column in OCCUPATIONS so that each Name is sorted alphabetically and displayed underneath its corresponding Occupation. The output column headers should be Doctor, Professor, Singer, and Actor, respectively.
+Note: Print NULL when there are no more names corresponding to an occupation.
+SELECT Doctor, Professor, Singer, Actor  FROM (SELECT NameOrder, 
+MAX(CASE Occupation WHEN 'Doctor' THEN Name END) AS Doctor,
+MAX(CASE Occupation WHEN 'Professor' THEN Name END) AS Professor, 
+MAX(CASE Occupation WHEN 'Singer' THEN Name END) AS Singer,
+MAX(CASE Occupation WHEN 'Actor' THEN Name END) AS Actor FROM (SELECT Occupation, Name, row_number() OVER(PARTITION BY Occupation ORDER BY Name ASC) AS NameOrder FROM OCCUPATIONS) AS NameLists GROUP BY NameOrder) AS Names;
+
+Query a count of the number of cities in CITY having a Population larger than 100,000.
+SELECT COUNT(COUNTRYCODE) FROM CITY WHERE POPULATION>100000;
+
+Query the total population of all cities in CITY where District is California.
+SELECT SUM(POPULATION) FROM CITY WHERE DISTRICT='California';
+
+Query the average population of all cities in CITY where District is California.
+SELECT AVG(POPULATION) FROM CITY WHERE DISTRICT='California';
+
+Query the average population for all cities in CITY, rounded down to the nearest integer.
+SELECT FLOOR(AVG(POPULATION)) FROM CITY;
+
+Query the sum of the populations for all Japanese cities in CITY. The COUNTRYCODE for Japan is JPN.
+SELECT SUM(POPULATION) FROM CITY WHERE COUNTRYCODE='JPN';
+
+Query the difference between the maximum and minimum populations in CITY.
+SELECT MAX(POPULATION) - MIN(POPULATION) FROM CITY;
+
+Write a query calculating the amount of error (i.e.:  average monthly salaries), and round it up to the next integer.
+SELECT CEIL(AVG(Salary)-AVG(REPLACE(Salary,'0',''))) FROM EMPLOYEES;
+
+Write a query to find the maximum total earnings for all employees as well as the total number of employees who have maximum total earnings. Then print these values as 2 space-separated integers.
+SELECT MAX(Salary*Months), COUNT(Salary*Months) FROM EMPLOYEE WHERE (Salary*Months)=(SELECT MAX(Salary*Months) FROM EMPLOYEE);
+
+The sum of all values in LAT_N rounded to a scale of 2 decimal places.
+The sum of all values in LONG_W rounded to a scale of 2 decimal places.
+SELECT ROUND(SUM(LAT_N),2), ROUND(SUM(LONG_W),2) FROM STATION;
+
+
+
+
